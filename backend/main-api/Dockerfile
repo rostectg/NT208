@@ -10,4 +10,4 @@ RUN pip3 install \
 COPY app.py /
 COPY blueprints /blueprints
 
-ENTRYPOINT ["python3", "-u", app.py"]
+ENTRYPOINT ["python3", "-u", "app.py"]

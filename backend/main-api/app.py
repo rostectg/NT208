@@ -2,11 +2,12 @@
 from flask import Flask
 
 from blueprints.archive import archive
+from blueprints.auth import auth
 
 app = Flask(__name__)
 
 app.register_blueprint(archive, url_prefix="/archive")
-
+app.register_blueprint(auth, url_prefix="/auth")
 
 @app.route('/')
 def index():

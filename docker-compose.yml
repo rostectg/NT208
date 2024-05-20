@@ -37,4 +37,4 @@ services:
   nginx:
     build: ./backend/nginx
     ports:
-      - 80:8000
+      - 8000:8000

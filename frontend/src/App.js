@@ -2,8 +2,6 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import Register from './components/Register';
 import LogIn from './components/LogIn';
-import Header from './components/Header';
-import InputBeforeLogIn from './components/InputBeforeLogIn';
 import HeaderAfterLogIn from './components/HeaderAfterLogIn';
 import InputAfterLogIn from './components/InputAfterLogIn';
 

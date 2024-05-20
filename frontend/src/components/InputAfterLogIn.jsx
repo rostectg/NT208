@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { isArchivedApi } from '../apis/isArchivedApi';
+import { listSnapshotVersionsApi } from '../apis/listSnapshotVersionsApi';
 
 InputAfterLogIn.propTypes = {
 
 };
 
 function InputAfterLogIn(props) {
+  const [input, setInput] = useState("");
+  const [listVersions, setListVersions] = useState([])
+
+  const getInput = () => {
+    const inputValue = document.querySelector("input").value;
+    if (inputValue !== "") {
+      setInput(inputValue);
+    }
+  }
+  useEffect(() => {
+    async function checkArchived() {
+      const isArchived = await isArchivedApi.get(input);
+      if (isArchived.data.status === "archived") {
+        const listSnapshot = await listSnapshotVersionsApi.get(input);
+        setListVersions(listSnapshot.data.snapshot_list);
+      }
+    }
+   }, [input])
   return (
     <div>
       <h2 className='text-center text-2xl font-medium mt-20 mb-8
@@ -21,12 +41,15 @@ function InputAfterLogIn(props) {
           className='w-3/4 focus:outline-none md:w-5/6 lg:w-5/6'
           placeholder='https://example.com/blog/deleted.html'
         />
-        <i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"></i>
+        <i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"
+          onClick={getInput}
+        ></i>
       </form>
 
       <h4
         className='text-center mt-5 text-lg'
       >Recently Viewed</h4>
+      <div className='output'></div>
     </div>
   );
 }

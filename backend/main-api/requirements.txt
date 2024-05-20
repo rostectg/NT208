@@ -2,9 +2,4 @@ flask
 pymongo
 requests
 validators
-Flask, 
-jsonify, 
-request,
-pymongo,
-uuid,
-pbkdf2_sha256,
+passlib

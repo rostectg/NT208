@@ -9,48 +9,64 @@ db = client.register
 
 app = Flask(__name__)
 
-@app.route('/register/', methods= ['POST'])
-def signup():
-    return User().signup()
+# route check user is valid or not
+@app.route('/register/check/', methods= ['POST'])
+def check():
+    return User().check()
+
+# route do register
+@app.route('/register/do_register/', methods= ['POST'])
+def do_register():
+    return User().do_register()
 
 class User:
-  def signup(self):
+  def check(self):
 
-    # Create user object
+    # Get username from JSON 
+    username = request.args.get('username')
+
+    # check username is more than = 6 character
+    if len(username) < 6:
+      return jsonify({
+        "success": True,
+        "message": "Username is less than 6."
+        }), 400
+
+    # check username is avalable or not
+    if db.user.find_one({"username": username}):
+      return jsonify({
+        "success": True,
+        "message": "Username is avalable."
+        }), 400
+
+
+  def do_register(self):
+
+    # Create user object and get data from JSON
     user = {
-        "_id": uuid.uuid4().hex,
-        "username": request.form.get('username'),
-        "email": request.form.get('email'),
-        "password": request.form.get('password'),
+    "_id": uuid.uuid4().hex,
+    "username": request.args.get('username'),
+    "password": request.args.get('password'),
     }
-    rePassword = request.form.get('rePassword')
-
-
-    # check username is more than = 8 character
-    if len(user['username']) < 8:
-      return jsonify({"error": "Username is less than 8 chacracter!"}), 400
-
-    # Check for existing email address
-    if db.user.find_one({"email": user['email']}):
-       return jsonify({"error": "Email address already in use!"}), 400
 
     # check if password is more than = 8 character
     if len(user['password']) < 8:
-      return jsonify({"error": "Password is less than 8 chacracter!"}), 400
-
-    # check password is matched or not
-    if user['password'] != rePassword:
-       return jsonify({"error": "Password is not matched!"}), 400
-
+      return jsonify({
+        "success": False,
+        "message": "Password is less than 8 chacracter!"
+         }), 400
+    
     # Encrypt the password
     user['password'] = pbkdf2_sha256.encrypt(user['password'])
 
     # Insert user to mongodb
     if db.user.insert_one(user):
-       return jsonify(user), 200
+      return jsonify({
+        "success": True,
+         "message": "Signup Successful!"
+         }), 400
     
-    return jsonify({"error": "Signup failed!"}), 400
-  
-  
-if __name__ == "__main__":
-    app.run()
+    return jsonify({
+      "success": False,
+      "message": "Signup failed!"
+      }), 400

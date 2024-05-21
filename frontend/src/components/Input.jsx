@@ -3,6 +3,7 @@ import { isArchivedApi } from '../apis/isArchivedApi';
 import { listSnapshotVersionsApi } from '../apis/listSnapshotVersionsApi';
 import Snapshot from './Snapshot';
 import { doArchiveApi } from './../apis/doArchive';
+import { notification } from 'antd';
 
 
 function Input() {
@@ -17,13 +18,13 @@ function Input() {
   const checkIfArchived = async () => {
     try {
       const response = await isArchivedApi.get(inputValue);
-      const responseData = response.data.status;
-      setIsArchived(responseData === 'archived');
+      const responseData = response.data;
+      if (responseData.success === true) {
+        setIsArchived(responseData === 'archived');
+      }
 
       if (isArchived === true) {
         clearInterval(intervalId);
-        const listSnapshot = await listSnapshotVersionsApi.get(inputValue);
-        setListVersions(listSnapshot.data.snapshot_list);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -40,17 +41,29 @@ function Input() {
 
   const handleButtonClick = async () => {
     setArchiving(true);
-    if (inputValue === "") setArchiving(false);
-    await checkIfArchived();
+    if (inputValue === "") {
+      setArchiving(false);
+    } else {
+      const response = await isArchivedApi.get(inputValue);
+      const responseData = response.data;
+      if (responseData.success === true) {
+        setIsArchived(responseData === 'archived');
+        await checkIfArchived();
+        if (isArchived === false) {
+          doArchive()
+        } else {
+          const listSnapshot = await listSnapshotVersionsApi.get(inputValue);
+          setListVersions(listSnapshot.data.snapshot_list);
+        }
 
-    if (isArchived === false) {
-      doArchive()
-    }
-
-    // Set up the interval to call checkIfArchived every 5 seconds
-    const id = setInterval(checkIfArchived, 1000);
-    setIntervalId(id);
-    setIsArchived(false);
+        const id = setInterval(checkIfArchived, 1000);
+        setIntervalId(id);
+        setIsArchived(false);
+      } else {
+        notification.error({ message: responseData.msg, duration: 3 })
+        setArchiving(false)
+      }
+    };
   };
 
   useEffect(() => {
@@ -61,6 +74,11 @@ function Input() {
     setInputValue(event.target.value);
 
   };
+
+  const handleClearInput = () => {
+    setInputValue("")
+  }
+
   return (
     <div>
       <h2 className='text-center text-2xl font-medium mt-20 mb-8
@@ -71,29 +89,38 @@ function Input() {
         World Web
       </h2>
       <form className='rounded-full h-11 w-5/6 md:w-4/6 mx-auto py-2 border-slate-200 border-2 bg-white lg:h-16 lg:w-2/5 lg:py-4'>
-        <i className="!text-black fa-solid fa-xmark p-1 ml-3 mr-2 cursor-pointer lg:p-2 lg:mx-3"></i>
+        <i className="!text-black fa-solid fa-xmark p-1 ml-3 mr-2 cursor-pointer lg:p-2 lg:mx-3"
+          onClick={handleClearInput}></i>
         <input
           className='input !text-black w-3/4 focus:outline-none md:w-5/6 lg:w-5/6'
           placeholder='https://example.com/blog/deleted.html'
           onChange={handleInputChange}
+          value={inputValue}
         />
         <i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"
           onClick={handleButtonClick}
         ></i>
       </form>
 
-      {isAuthenticated === true ? (archiving === true ?
-        (listVersions.length === 0 ?
-          (isArchived === false ?
-            (<h4 className='text-center my-5 text-lg'>Website is not archived yet. Archiving...</h4>) :
-            (<h4 className='text-center my-5 text-lg'>There are no versions of your website snapshot</h4>))
+      {
+        isAuthenticated === true ?
+          (
+            archiving === true ?
+              (
+                listVersions.length === 0 ?
+                  (
+                    isArchived === false ?
+                      (<h4 className='text-center my-5 text-lg'>Website is not archived yet. Archiving...</h4>) :
+                      (<h4 className='text-center my-5 text-lg'>There are no versions of your website snapshot</h4>)
+                  )
+                  :
+                  (<h4 className='text-center my-5 text-lg'>Snapshot Versions</h4>)
+              )
+              :
+              (<h4 className='text-center my-5 text-lg'>Start snapshot by type in above input</h4>)
+          )
           :
-          (<h4 className='text-center my-5 text-lg'>Snapshot Versions</h4>))
-        :
-        (<div></div>)
-      )
-        :
-        (<div className='mt-4 text-center font-extralight text-sm'>Guest users are allowed 3 searches per day</div>)
+          (<div className='mt-4 text-center font-extralight text-sm'>Guest users are allowed 3 searches per day</div>)
       }
 
       <div className='output w-5/6 mx-auto'>

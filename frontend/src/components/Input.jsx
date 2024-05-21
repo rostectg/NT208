@@ -8,7 +8,6 @@ import { doArchiveApi } from './../apis/doArchive';
 function Input() {
   const isAuthenticated = true;
   const [inputValue, setInputValue] = useState("");
-  // const [input, setInput] = useState("z");
   const [listVersions, setListVersions] = useState([]);
   const [isArchived, setIsArchived] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
@@ -21,7 +20,6 @@ function Input() {
       const responseData = response.data.status;
       setIsArchived(responseData === 'archived');
 
-      // If the data is 'archived', stop the interval
       if (isArchived === true) {
         clearInterval(intervalId);
         const listSnapshot = await listSnapshotVersionsApi.get(inputValue);
@@ -32,7 +30,6 @@ function Input() {
     }
   };
 
-  // Function to call the doArchived API
   const doArchive = async () => {
     try {
       await doArchiveApi.get(inputValue);
@@ -41,7 +38,6 @@ function Input() {
     }
   };
 
-  // Handle button click
   const handleButtonClick = async () => {
     setArchiving(true);
     if (inputValue === "") setArchiving(false);

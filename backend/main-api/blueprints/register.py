@@ -64,7 +64,7 @@ class User:
       return jsonify({
         "success": True,
          "message": "Signup Successful!"
-         }), 400
+         }), 200
     
     return jsonify({
       "success": False,

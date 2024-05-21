@@ -1,21 +1,23 @@
-from flask import Flask, jsonify, request
+from flask import Blueprint, jsonify, request
 import pymongo
 import uuid
 from passlib.hash import pbkdf2_sha256
 
-# Database
+# Create Blueprint 
+register = Blueprint('register', __name__)
+
+# Create Database
 client = pymongo.MongoClient('localhost', 27017)
 db = client.register
 
-app = Flask(__name__)
 
 # route check user is valid or not
-@app.route('/register/check/', methods= ['POST'])
+@register.route('/register/check/', methods= ['POST'])
 def check():
     return User().check()
 
 # route do register
-@app.route('/register/do_register/', methods= ['POST'])
+@register.route('/register/do_register/', methods= ['POST'])
 def do_register():
     return User().do_register()
 

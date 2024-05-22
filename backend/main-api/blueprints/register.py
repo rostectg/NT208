@@ -15,35 +15,33 @@ db = client[DB_NAME]
 # route check user is valid or not
 @register.route('/check', methods= ['POST'])
 def check():
-    return User().check()
+  username = request.json.get('username')  
+  if (User().is_available(username)):
+    return jsonify({
+      "success": True,
+      "message": "Username is avalable."
+      }), 200
+  else:
+    return jsonify({
+      "success": False,
+      "message": "Username is not available."
+      }), 200
 
 # route do register
 @register.route('/do_register', methods= ['POST'])
 def do_register():
-    return User().do_register()
+  return User().do_register()
 
 class User:
-  def check(self):
-    # Get username from JSON 
-    username = request.json.get('username')
-
-    # check username is avalable or not
-    if (not db.user.find_one({"username": username})):
-      return jsonify({
-        "success": True,
-        "message": "Username is avalable."
-        }), 200
-    else:
-      return jsonify({
-        "success": False,
-        "message": "Username is not available."
-        }), 200
+  def is_available(self, username):
+    entry = db.user.find_one({"username": username})
+    return not entry
 
   def do_register(self):
     # Create user object and get data from JSON
     user = {
     "user_id": str(uuid.uuid4()),
-    "email": request.json.get('email', default=""),
+    "email": request.json.get('email', ""),
     "username": request.json.get('username'),
     "password": request.json.get('password'),
     }

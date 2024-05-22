@@ -8,9 +8,6 @@ db = client[DB_NAME]
 
 auth = Blueprint('auth', __name__)
 
-def start_session(session_id):
-	return True
-
 @auth.route('/')
 def default():
 	return jsonify({})

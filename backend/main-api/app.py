@@ -2,10 +2,12 @@
 from flask import Flask
 
 from blueprints.archive import archive
+from blueprints.register import register
 
 app = Flask(__name__)
 
 app.register_blueprint(archive, url_prefix="/archive")
+app.register_blueprint(register, url_prefix="/register")
 
 
 @app.route('/')

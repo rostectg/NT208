@@ -6,49 +6,46 @@ from passlib.hash import pbkdf2_sha256
 # Create Blueprint 
 register = Blueprint('register', __name__)
 
-# Create Database
-client = pymongo.MongoClient('localhost', 27017)
-db = client.register
+MONGO_CONNECTION_STRING = "mongodb://root:Passw0rd321@mongo:27017/"
+DB_NAME = "archiver_database"
 
+client = pymongo.MongoClient(MONGO_CONNECTION_STRING)
+db = client[DB_NAME]
 
 # route check user is valid or not
-@register.route('/register/check/', methods= ['POST'])
+@register.route('/check', methods= ['POST'])
 def check():
     return User().check()
 
 # route do register
-@register.route('/register/do_register/', methods= ['POST'])
+@register.route('/do_register', methods= ['POST'])
 def do_register():
     return User().do_register()
 
 class User:
   def check(self):
-
     # Get username from JSON 
-    username = request.args.get('username')
-
-    # check username is more than = 6 character
-    if len(username) < 6:
-      return jsonify({
-        "success": True,
-        "message": "Username is less than 6."
-        }), 400
+    username = request.json.get('username')
 
     # check username is avalable or not
-    if db.user.find_one({"username": username}):
+    if (not db.user.find_one({"username": username})):
       return jsonify({
         "success": True,
         "message": "Username is avalable."
-        }), 400
-
+        }), 200
+    else:
+      return jsonify({
+        "success": False,
+        "message": "Username is not available."
+        }), 200
 
   def do_register(self):
-
     # Create user object and get data from JSON
     user = {
-    "_id": uuid.uuid4().hex,
-    "username": request.args.get('username'),
-    "password": request.args.get('password'),
+    "user_id": str(uuid.uuid4()),
+    "email": request.json.get('email', default=""),
+    "username": request.json.get('username'),
+    "password": request.json.get('password'),
     }
 
     # check if password is more than = 8 character
@@ -56,7 +53,7 @@ class User:
       return jsonify({
         "success": False,
         "message": "Password is less than 8 chacracter!"
-         }), 400
+         }), 200
     
     # Encrypt the password
     user['password'] = pbkdf2_sha256.encrypt(user['password'])
@@ -71,4 +68,4 @@ class User:
     return jsonify({
       "success": False,
       "message": "Signup failed!"
-      }), 400
+      }), 200

@@ -21,7 +21,7 @@ def default():
 def login():
 	username = request.json.get("username")
 	password = request.json.get("password")
-	this_user = db.user.find_one({"username": username})
+	this_user = db.users.find_one({"username": username})
 	# this_user = db.users.find_one("$or": [{"username": username}, {"email": username}])
 	print(this_user)
 	if (this_user):

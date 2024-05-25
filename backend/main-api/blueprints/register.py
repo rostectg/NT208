@@ -34,7 +34,7 @@ def do_register():
 
 class User:
 	def is_available(self, username):
-		entry = db.user.find_one({"username": username})
+		entry = db.users.find_one({"username": username})
 		return not entry
 
 	def do_register(self):
@@ -63,7 +63,7 @@ class User:
 		user['password'] = pbkdf2_sha256.encrypt(user['password'])
 
 		# Insert user to mongodb
-		if db.user.insert_one(user):
+		if db.users.insert_one(user):
 			return jsonify({
 				"success": True,
 				"message": "Signup Successful!"

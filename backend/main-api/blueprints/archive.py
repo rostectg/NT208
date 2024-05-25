@@ -41,7 +41,7 @@ def do_archive_thread(url):
 	try:
 		raw_html = requests.post(SINGLEFILE_SERVER, data=req_body).content
 		print("Done.")
-	except Exception(e):
+	except Exception as e:
 		print(repr(e))
 	timestamp = time.time()
 

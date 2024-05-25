@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 import pymongo
 import uuid
 from passlib.hash import pbkdf2_sha256
@@ -10,8 +10,8 @@ db = client[DB_NAME]
 
 auth = Blueprint('auth', __name__)
 
-def start_session(session_id):
-	return True
+def is_logged_in():
+	return ("user_id" in session)
 
 @auth.route('/')
 def default():
@@ -19,25 +19,18 @@ def default():
 
 @auth.route('/login', methods=['GET','POST'])
 def login():
-	RESPONSE = {}
 	username = request.json.get("username")
 	password = request.json.get("password")
-	user_collection = db["users"]
-	query_result = user_collection.find_one({"username": username})
-	if (query_result):
-		if (pbkdf2_sha256.verify(password, query_result["password"])):
-			session_id = str(uuid.uuid4())
-			query = {"session_id": session_id}
-
+	this_user = db.user.find_one({"username": username})
+	# this_user = db.users.find_one("$or": [{"username": username}, {"email": username}])
+	print(this_user)
+	if (this_user):
+		if (pbkdf2_sha256.verify(password, this_user["password"])):
+			session["user_id"] = this_user["user_id"]
 			return jsonify({
 				"success": True,
 				"msg": "Login successful."
 			})
-				RESPONSE["success"] = True
-				RESPONSE["msg"] = "Login successful."
-				RESPONSE["session_id"] = session_id
-				user.insert_one(query)
-
 	return jsonify({
 		"success": False,
 		"msg": "Wrong username or password."
@@ -45,16 +38,27 @@ def login():
 
 @auth.route('/logout', methods=['GET','POST'])
 def logout():
-	RESPONSE = {}
-	session_id = request.args.get("session_id")
-	user = db["users"]
-	query = {"session_id": session_id}
-	session_id_query = user.find_one(query)
-	if (session_id_query == None):
-		RESPONSE["success"] = False
-		RESPONSE["msg"] = "Session ID is empty."
+	if is_logged_in():
+		session.clear()
+		return jsonify({
+			"success": True,
+			"msg": "Logout successful."
+		})
 	else:
-		user.delete_one(query)
-		RESPONSE["success"] = True
-		RESPONSE["msg"] = "Logout successful."
-	return jsonify(RESPONSE)
+		return jsonify({
+			"success": False,
+			"msg": "Not logged in."
+		})
+
+	# session_id = request.args.get("session_id")
+	# user = db["users"]
+	# query = {"session_id": session_id}
+	# session_id_query = user.find_one(query)
+	# if (session_id_query == None):
+	# 	RESPONSE["success"] = False
+	# 	RESPONSE["msg"] = "Session ID is empty."
+	# else:
+	# 	user.delete_one(query)
+	# 	RESPONSE["success"] = True
+	# 	RESPONSE["msg"] = "Logout successful."
+	# return jsonify(RESPONSE)

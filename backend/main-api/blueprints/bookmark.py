@@ -1,125 +1,140 @@
-from flask import Blueprint, request, jsonify
-from pymongo import MongoClient
+from flask import Blueprint, request, jsonify, session
+import pymongo
 from datetime import datetime
+from .auth import is_logged_in
 
 # Create blueprint 
 bookmark_bp = Blueprint('bookmark', __name__)
 
-# Connect MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['your_database']
-bookmarks_collection = db['bookmarks']
+# client = MongoClient('mongodb://localhost:27017/')
+MONGO_CONNECTION_STRING = "mongodb://root:Passw0rd321@mongo:27017/"
+DB_NAME = "archiver_database"
+client = pymongo.MongoClient(MONGO_CONNECTION_STRING)
+db = client[DB_NAME]
 
-# Check Session_ ID
-def check_session(session_id):
-    sessions_collection = db['sessions']
-    return sessions_collection.find_one({"session_id": session_id}) is not None
+bookmarks_collection = db['bookmarks']
+recents_collection = db['recents']
+
+def add_recent(url):
+    if is_logged_in():
+        uid = session["user_id"]
+        recents = list(recents_collection.find({"user_id": uid}).sort([("$natural", 1)]))
+        if (len(recents) == 5): # max recents
+            rid = recents[0]["_id"]
+            db.recent.delete_one({"_id": rid}) # delete oldest entry
+        recent_entry = {"user_id": uid, "url": url}
+        db.recent.insert_one(recent_entry)
 
 @bookmark_bp.route('/recent', methods=['POST'])
 def get_recent():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    user_bookmarks = bookmarks_collection.find({"session_id": session_id}).sort("timestamp", -1).limit(5)
-    recent_urls = [bookmark['url'] for bookmark in user_bookmarks]
-    
-    return jsonify({"success": True, "recent": recent_urls})
+    if is_logged_in():
+        uid = session['user_id']
+        recent_urls = list(recents_collection.find({"user_id": uid}))
+        return jsonify({"success": True, "recent_urls": recent_urls})
+    else:
+        return jsonify({"success": False, "msg": "Not logged in."})
+    # user_bookmarks = bookmarks_collection.find({"session_id": session_id}).sort("timestamp", -1).limit(5)
+    # recent_urls = [bookmark['url'] for bookmark in user_bookmarks]
+    # return jsonify({"success": True, "recent": recent_urls})
 
 @bookmark_bp.route('/add', methods=['POST'])
 def add_bookmark():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    url = data.get('url')
-    
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    bookmarks_collection.update_one(
-        {"session_id": session_id, "url": url},
-        {"$set": {"url": url, "tags": [], "timestamp": datetime.utcnow()}},
-        upsert=True
-    )
-    
-    return jsonify({"success": True})
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        url = data.get["url"]
+        if not url:
+            return jsonify({"success": False, "message": "URL is empty"}), 401
+        # bookmarks_collection.update_one(
+        #     {"session_id": session_id, "url": url},
+        #     {"$set": {"url": url, "tags": [], "timestamp": datetime.utcnow()}},
+        #     upsert=True
+        # )
+        bookmarks_collection.insert_one({
+            "user_id": uid,
+            "url": url,
+            "tags": [],
+            "timestamp": datetime.utcnow()
+        })
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "msg": "Not logged in."})
 
 @bookmark_bp.route('/remove', methods=['POST'])
 def remove_bookmark():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    url = data.get('url')
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        url = data.get["url"]
     
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    bookmarks_collection.delete_one({"session_id": session_id, "url": url})
-    
-    return jsonify({"success": True})
+        bookmarks_collection.delete_one({"user_id": uid, "url": url})
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "msg": "Not logged in."})
 
 @bookmark_bp.route('/add_tag', methods=['POST'])
 def add_tag():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    url = data.get('url')
-    tags = data.get('tags')
-    
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    result = bookmarks_collection.update_one(
-        {"session_id": session_id, "url": url},
-        {"$addToSet": {"tags": {"$each": tags}}}
-    )
-    
-    if result.modified_count > 0:
-        return jsonify({"success": True})
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        url = data.get('url')
+        tags = data.get('tags')
+        
+        result = bookmarks_collection.update_one(
+            {"user_id": uid, "url": url},
+            {"$addToSet": {"tags": {"$each": tags}}}
+        )
+        
+        if result.modified_count > 0:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "message": "URL not found or tags not added"}), 400
     else:
-        return jsonify({"success": False, "message": "URL not found or tags not added"}), 400
+        return jsonify({"success": False, "msg": "Not logged in."})
 
 @bookmark_bp.route('/remove_tag', methods=['POST'])
 def remove_tag():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    url = data.get('url')
-    tags = data.get('tags')
-    
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    result = bookmarks_collection.update_one(
-        {"session_id": session_id, "url": url},
-        {"$pullAll": {"tags": tags}}
-    )
-    
-    if result.modified_count > 0:
-        return jsonify({"success": True})
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        url = data.get('url')
+        tags = data.get('tags')
+        
+        result = bookmarks_collection.update_one(
+            {"user_id": uid, "url": url},
+            {"$pullAll": {"tags": tags}}
+        )
+        
+        if result.modified_count > 0:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "message": "Tags not present"}), 400
     else:
-        return jsonify({"success": False, "message": "Tags not present"}), 400
+        return jsonify({"success": False, "msg": "Not logged in."})
 
 @bookmark_bp.route('/list', methods=['POST'])
 def list_bookmarks():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    user_bookmarks = bookmarks_collection.find({"session_id": session_id})
-    bookmarks = [{"url": bookmark['url'], "tags": bookmark.get('tags', [])} for bookmark in user_bookmarks]
-    
-    return jsonify({"success": True, "bookmarks": bookmarks})
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        
+        user_bookmarks = bookmarks_collection.find({"user_id": uid})
+        bookmarks = [{"url": bookmark['url'], "tags": bookmark.get('tags', [])} for bookmark in user_bookmarks]
+        
+        return jsonify({"success": True, "bookmarks": bookmarks})
+    else:
+        return jsonify({"success": False, "msg": "Not logged in."})
 
 @bookmark_bp.route('/list_by_tag', methods=['POST'])
 def list_by_tag():
-    data = request.get_json()
-    session_id = data.get('session_id')
-    tag = data.get('tag')
-    
-    if not check_session(session_id):
-        return jsonify({"success": False, "message": "Invalid session_id"}), 401
-    
-    user_bookmarks = bookmarks_collection.find({"session_id": session_id, "tags": tag})
-    bookmarks = [{"url": bookmark['url'], "tags": bookmark.get('tags', [])} for bookmark in user_bookmarks]
-    
-    return jsonify({"success": True, "bookmarks": bookmarks})
+    if is_logged_in():
+        data = request.get_json()
+        uid = session["user_id"]
+        tag = data.get('tag')
+        
+        user_bookmarks = bookmarks_collection.find({"user_id": uid, "tags": tag})
+        bookmarks = [{"url": bookmark['url'], "tags": bookmark.get('tags', [])} for bookmark in user_bookmarks]
+        
+        return jsonify({"success": True, "bookmarks": bookmarks})
+    else:
+        return jsonify({"success": False, "msg": "Not logged in."})

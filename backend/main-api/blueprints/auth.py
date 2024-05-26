@@ -23,7 +23,6 @@ def login():
 	password = request.json.get("password")
 	this_user = db.users.find_one({"username": username})
 	# this_user = db.users.find_one("$or": [{"username": username}, {"email": username}])
-	print(this_user)
 	if (this_user):
 		if (pbkdf2_sha256.verify(password, this_user["password"])):
 			session["user_id"] = this_user["user_id"]
@@ -45,10 +44,7 @@ def logout():
 			"msg": "Logout successful."
 		})
 	else:
-		return jsonify({
-			"success": False,
-			"msg": "Not logged in."
-		})
+		return unauthenticated
 
 	# session_id = request.args.get("session_id")
 	# user = db["users"]

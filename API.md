@@ -42,8 +42,7 @@
 ```JSON
 {
 	"success": true,
-	"message": "Login successful.",
-	"session_id": "123e4567-e89b-12d3-a456-426614174000"
+	"message": "Login successful."
 }
 ----------------
 {
@@ -54,9 +53,7 @@
 
 **/auth/logout**
 ```JSON
-{
-	"session_id": "123e4567-e89b-12d3-a456-426614174000"
-}
+{}
 ```
 
 ```JSON
@@ -73,7 +70,6 @@
 Check trạng thái của URL mục tiêu
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://abc.com/index.html"
 }
 ```
@@ -92,7 +88,6 @@ Check trạng thái của URL mục tiêu
 Bắt đầu thực hiện lưu URL mục tiêu
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://abc.com/index.html"
 }
 ```
@@ -113,7 +108,6 @@ Bắt đầu thực hiện lưu URL mục tiêu
 Sau khi gọi `/archive/check` nếu trả về trạng thái `archived` --> Tiếp tục  gọi API này để lấy danh sách các snapshots đã lưu
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://abc.com/index.html"
 }
 ```
@@ -143,7 +137,6 @@ Sau khi gọi `/archive/check` nếu trả về trạng thái `archived` --> Ti�
 **/archive/view_raw**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"snapshot_id": "661f76eb-420d-40a6-a2fa-4ada7c25375c"
 }
 ```
@@ -158,15 +151,13 @@ Sau khi gọi `/archive/check` nếu trả về trạng thái `archived` --> Ti�
 **/bookmark/recent**
 Recently viewed URLs
 ```JSON
-{
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
-}
+{}
 ```
 
 ```JSON
 {
 	"success": true,
-	"recent": [
+	"recent_urls": [
 		"https://abc.com/index.html",
 		"https://xyz.net/aaa"
 	]
@@ -176,7 +167,6 @@ Recently viewed URLs
 **/bookmark/add**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://xyz.net/aaa"
 }
 ```
@@ -190,7 +180,6 @@ Recently viewed URLs
 **/bookmark/remove**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://xyz.net/aaa"
 }
 ```
@@ -204,7 +193,6 @@ Recently viewed URLs
 **/bookmark/add_tag**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://xyz.net/aaa",
 	"tags": ["cooking", "gift"]
 }
@@ -223,7 +211,6 @@ Recently viewed URLs
 **/bookmark/remove_tag**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"url": "https://xyz.net/aaa",
 	"tags": ["cooking", "gift"]
 }
@@ -241,9 +228,7 @@ Recently viewed URLs
 
 **/bookmark/list**
 ```JSON
-{
-	"session_id": "123e4567-e89b-12d3-a456-426614174000"
-}
+{}
 ```
 
 ```JSON
@@ -260,7 +245,6 @@ Recently viewed URLs
 **/bookmark/list_by_tag**
 ```JSON
 {
-	"session_id": "123e4567-e89b-12d3-a456-426614174000",
 	"list_by_tag": "cooking"
 }
 ```

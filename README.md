@@ -123,21 +123,27 @@ POST /api/archive/is_archived
 ```
 **2. Start archiving a webpage:**
 ```
-GET /api/archive/do_archive?url=https://www.github.com
+POST /api/archive/do_archive
+
+{"url": "https://www.github.com"}
 ```
 ```
 {"msg":"Archiving target site, please wait.","success":true}
 ```
 **3. Keep polling `/api/archive/is_archived` to check for progress, until it either returns `archived` or `unreachable`**
 ```
-GET /api/archive/is_archived?url=https://www.github.com
+POST /api/archive/is_archived
+
+{"url": "https://www.github.com"}
 ```
 ```
 {"status":"not_archived","success":true}
 ```
 **4. Get the list of archived snapshots of the requested URL**
 ```
-GET /api/archive/list?url=https://www.github.com
+POST /api/archive/list
+
+{"url": "https://www.github.com"}
 ```
 ```
 {
@@ -156,11 +162,127 @@ GET /api/archive/list?url=https://www.github.com
 ```
 **5. View URL's archived snapshot**
 ```
-GET /api/archive/view_raw?snapshot_id=1715113451.011099
+POST /api/archive/view_raw
+
+{"snapshot_id": "1715113451.011099"}
 ```
 ```
 <!DOCTYPE html> <html> .................
 ```
+
+### API flow: BOOKMARK
+**1. Get recently viewed URLs** (logged in users only)
+```
+POST /api/bookmark/recent
+
+{}
+```
+```
+{
+  "success": true,
+  "recent_urls": [
+    {
+      "timestamp": "2024-05-26 16:11:25.362938",
+      "url": "https://www.msn.com"
+    },
+    {
+      "timestamp": "2024-05-26 16:15:44.742345",
+      "url": "https://www.github.com"
+    },
+	...
+  ]
+}
+```
+
+**2. Add new bookmark**
+```
+POST /api/bookmark/add
+
+{"url": "https://www.github.com"}
+```
+```
+{"success":true}
+```
+
+**3. Remove bookmark**
+```
+POST /api/bookmark/remove
+
+{"url": "https://www.github.com"}
+```
+```
+{"success":true}
+```
+
+
+**4. Add tags to bookmarked URL**
+```
+POST /api/bookmark/add_tags
+
+{"url": "https://www.github.com", "tags": ["coding", "repository", "blabla"]}
+```
+```
+{"success":true}
+{"success":false, "msg": "URL not found or tags not added"}
+```
+
+
+**5. Remove tags from bookmarked URL**
+```
+POST /api/bookmark/remove_tags
+
+{"url": "https://www.github.com", "tags": ["coding", "blabla"]}
+```
+```
+{"success":true}
+{"success":false, "msg": "Tags not present"}
+```
+
+**6. List all bookmarked URLs**
+```
+POST /api/bookmark/list
+
+{}
+```
+```
+{
+  "success": true,
+  "bookmarks": [
+    {
+      "url": "https://www.github.com",
+      "tags": [
+        "repository",
+        "coding"
+      ]
+    },
+    ...
+  ]
+}
+```
+
+
+**6. List all bookmarks with tag X**
+```
+POST /api/bookmark/list_by_tag
+
+{"tag": "coding"}
+```
+```
+{
+  "success": true,
+  "bookmarks": [
+    {
+      "url": "https://www.github.com",
+      "tags": [
+        "repository",
+        "coding"
+      ]
+    },
+    ...
+  ]
+}
+```
+
 
 ### Troubleshooting
 - "Have you tried turning it off and on again?"  `systemctl restart docker`

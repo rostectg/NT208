@@ -5,6 +5,7 @@ import validators
 import requests
 import time
 import uuid
+from .bookmark import add_recent
 
 DB_NAME = "archiver_database"
 #STORAGE_DIR = "../storage/snapshots"
@@ -21,11 +22,6 @@ client = pymongo.MongoClient(MONGO_CONNECTION_STRING)
 db = client[DB_NAME]
 
 archive = Blueprint('archive', __name__)
-
-
-
-def check_session(session_id):
-	return True
 
 def do_archive_thread(url):
 	url_list = db["urls"]
@@ -154,6 +150,7 @@ def view_snapshot():
 	query_result = snapshot_list.find_one(query)
 
 	if (query_result):
+		add_recent(query_result["url"])  # Add to recently viewed urls
 		filepath = query_result["file_path"]
 		with open(filepath, "rb") as f:
 			RESPONSE = f.read()

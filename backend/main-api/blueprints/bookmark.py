@@ -17,19 +17,21 @@ recents_collection = db['recents']
 
 def add_recent(url):
     if is_logged_in():
-        uid = session["user_id"]
-        recents = list(recents_collection.find({"user_id": uid}).sort([("$natural", 1)]))
-        if (len(recents) == 5): # max recents
-            rid = recents[0]["_id"]
-            db.recent.delete_one({"_id": rid}) # delete oldest entry
-        recent_entry = {"user_id": uid, "url": url}
-        db.recent.insert_one(recent_entry)
+        exist = recents_collection.find_one({"user_id": uid, "url": url})
+        if (not exist):
+            uid = session["user_id"]
+            recents = list(recents_collection.find({"user_id": uid}).sort([("$natural", 1)]))
+            if (len(recents) == 5): # max recents
+                ts = recents[0]["timestamp"]
+                recents_collection.delete_one({"timestamp": ts}) # delete oldest entry
+            recent_entry = {"user_id": uid, "url": url, "timestamp": str(datetime.utcnow())}
+            recents_collection.insert_one(recent_entry)
 
 @bookmark_bp.route('/recent', methods=['POST'])
 def get_recent():
     if is_logged_in():
         uid = session['user_id']
-        recent_urls = list(recents_collection.find({"user_id": uid}))
+        recent_urls = list(recents_collection.find({"user_id": uid}, {"_id": False}))
         return jsonify({"success": True, "recent_urls": recent_urls})
     else:
         return jsonify({"success": False, "msg": "Not logged in."})
@@ -54,7 +56,7 @@ def add_bookmark():
             "user_id": uid,
             "url": url,
             "tags": [],
-            "timestamp": datetime.utcnow()
+            "timestamp": str(datetime.utcnow())
         })
         return jsonify({"success": True})
     else:

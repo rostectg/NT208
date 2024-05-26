@@ -1,82 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { isArchivedApi } from '../apis/isArchivedApi';
-import { listSnapshotVersionsApi } from '../apis/listSnapshotVersionsApi';
 import Snapshot from './Snapshot';
-import { doArchiveApi } from './../apis/doArchive';
-import { notification } from 'antd';
+import { Modal, Spin, message, notification } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { getListSnapshots, checkArchive, doArchive } from '../redux/action';
 
 
 function Input() {
-  const isAuthenticated = true;
   const [inputValue, setInputValue] = useState("");
-  const [listVersions, setListVersions] = useState([]);
-  const [isArchived, setIsArchived] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
+  const [openModal, setOpenModal] = useState(false)
 
-  const [archiving, setArchiving] = useState(false);
+
+  const dispatch = useDispatch()
+  const archived = useSelector((state) => state.snapshot.isArchived)
+  const listSnapshots = useSelector((state) => state.snapshot.listSnapshot)
+  const statusProgress = useSelector((state) => state.snapshot.status)
 
   const checkIfArchived = async () => {
-    try {
-      const response = await isArchivedApi.get(inputValue);
-      const responseData = response.data;
-      if (responseData.success === true) {
-        setIsArchived(responseData === 'archived');
-      }
-
-      if (isArchived === true) {
-        clearInterval(intervalId);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    dispatch(checkArchive(inputValue))
+    if (archived === true) {
+      clearInterval(intervalId)
+      dispatch(getListSnapshots(inputValue))
     }
   };
 
-  const doArchive = async () => {
-    try {
-      await doArchiveApi.get(inputValue);
-    } catch (error) {
-      console.error('Error archiving:', error);
-    }
-  };
-
-  const handleButtonClick = async () => {
-    setArchiving(true);
+  //click button arrow
+  const handleButton = () => {
+    // check archive or not
     if (inputValue === "") {
-      setArchiving(false);
+      notification.error({ message: "Please input URL", duration: 3 })
     } else {
-      const response = await isArchivedApi.get(inputValue);
-      const responseData = response.data;
-      if (responseData.success === true) {
-        setIsArchived(responseData === 'archived');
-        await checkIfArchived();
-        if (isArchived === false) {
-          doArchive()
-        } else {
-          const listSnapshot = await listSnapshotVersionsApi.get(inputValue);
-          setListVersions(listSnapshot.data.snapshot_list);
-        }
-
-        const id = setInterval(checkIfArchived, 1000);
-        setIntervalId(id);
-        setIsArchived(false);
+      dispatch(checkArchive(inputValue))
+      if (archived === true) {
+        dispatch(getListSnapshots(inputValue))
       } else {
-        notification.error({ message: responseData.msg, duration: 3 })
-        setArchiving(false)
+        notification.info({ message: "This url is not archived", duration: 3 })
+        setOpenModal(true)
       }
-    };
-  };
+    }
+  }
 
   useEffect(() => {
     return () => clearInterval(intervalId);
   }, [intervalId]);
 
+
+  //retain
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
-
   };
 
   const handleClearInput = () => {
     setInputValue("")
+  }
+
+  //modal handle
+  const handleCancel = () => {
+    setOpenModal(false)
+  }
+
+  const handleArchive = async () => {
+    dispatch(doArchive(inputValue))
+    setOpenModal(false)
+    message.loading("Archiving snapshot or your URL...")
+    const id = setInterval(checkIfArchived, 1000)
+    setIntervalId(id)
   }
 
   return (
@@ -93,39 +81,26 @@ function Input() {
           onClick={handleClearInput}></i>
         <input
           className='input !text-black w-3/4 focus:outline-none md:w-5/6 lg:w-5/6'
-          placeholder='https://example.com/blog/deleted.html'
+          placeholder='https://www.example.com'
           onChange={handleInputChange}
           value={inputValue}
         />
-        <i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"
-          onClick={handleButtonClick}
-        ></i>
+
+        {statusProgress === "PENDING" ? <Spin /> :
+          (<i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"
+            onClick={handleButton}
+          ></i>)}
       </form>
 
-      {
-        isAuthenticated === true ?
-          (
-            archiving === true ?
-              (
-                listVersions.length === 0 ?
-                  (
-                    isArchived === false ?
-                      (<h4 className='text-center my-5 text-lg'>Website is not archived yet. Archiving...</h4>) :
-                      (<h4 className='text-center my-5 text-lg'>There are no versions of your website snapshot</h4>)
-                  )
-                  :
-                  (<h4 className='text-center my-5 text-lg'>Snapshot Versions</h4>)
-              )
-              :
-              (<h4 className='text-center my-5 text-lg'>Start snapshot by type in above input</h4>)
-          )
-          :
-          (<div className='mt-4 text-center font-extralight text-sm'>Guest users are allowed 3 searches per day</div>)
-      }
+      {listSnapshots.length > 0 && (<h4 className='text-center my-5 text-lg'>Snapshot Versions</h4>)}
 
       <div className='output w-5/6 mx-auto'>
-        {listVersions.map((item, index) => (<Snapshot name={inputValue} data={item} />))}
+        {listSnapshots.map((item, index) => (<Snapshot key={index} name={inputValue} data={item} />))}
       </div>
+
+      <Modal title="Confirm" open={openModal} onOk={handleArchive} onCancel={handleCancel}>
+        <p>Your URl <b>{inputValue}</b> is not archived. Do you want to archive it?</p>
+      </Modal>
     </div>
   );
 }

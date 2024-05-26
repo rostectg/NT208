@@ -14,7 +14,7 @@ function Snapshot({ name, data }) {
 
   const formattedVietnamTime = vietnamTime.toISOString().slice(0, 19).replace('T', ' ');
   return (
-    <div href={`/${data.snapshot_id}`} className='md:w-5/6 lg:w-5/6 mx-auto my-2 h-20 bg-slate-200 text-black cursor-pointer px-3'>
+    <div href={`/${data.snapshot_id}`} className='md:w-5/6 lg:w-5/6 mx-auto my-2 h-20 bg-slate-300 text-black cursor-pointer px-3'>
       <a href={`/${data.snapshot_id}`}>
         <h2 className='font-bold'>Snapshot for {name}</h2>
         <p className='font-thin italic text-sm'>Saved at: {formattedVietnamTime}</p>

@@ -44,7 +44,7 @@ def logout():
 			"msg": "Logout successful."
 		})
 	else:
-		return unauthenticated
+		return jsonify({"success": False, "msg": "Not logged in."})
 
 	# session_id = request.args.get("session_id")
 	# user = db["users"]

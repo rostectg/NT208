@@ -19,12 +19,12 @@ def check():
 	if (User().is_available(username)):
 		return jsonify({
 			"success": True,
-			"message": "Username is avalable."
+			"msg": "Username is avalable."
 		}), 200
 	else:
 		return jsonify({
 			"success": False,
-			"message": "Username is not available."
+			"msg": "Username is not available."
 		}), 200
 
 # route do register
@@ -49,14 +49,14 @@ class User:
 		if not self.is_available(user["username"]):
 			return jsonify({
 				"success": False,
-				"message": "Username is not available."
+				"msg": "Username is not available."
 			}), 200
 
 		# check if password is more than = 8 character
 		if len(user['password']) < 8:
 			return jsonify({
 				"success": False,
-				"message": "Password is less than 8 chacracter!"
+				"msg": "Password is less than 8 chacracter!"
 			}), 200
 		
 		# Encrypt the password
@@ -66,10 +66,10 @@ class User:
 		if db.users.insert_one(user):
 			return jsonify({
 				"success": True,
-				"message": "Signup Successful!"
+				"msg": "Signup Successful!"
 			}), 200
 		
 		return jsonify({
 			"success": False,
-			"message": "Signup failed!"
+			"msg": "Signup failed!"
 		}), 200

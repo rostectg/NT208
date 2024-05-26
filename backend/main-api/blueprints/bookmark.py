@@ -46,7 +46,7 @@ def add_bookmark():
         uid = session["user_id"]
         url = data.get["url"]
         if not url:
-            return jsonify({"success": False, "message": "URL is empty"}), 401
+            return jsonify({"success": False, "msg": "URL is empty"}), 401
         # bookmarks_collection.update_one(
         #     {"session_id": session_id, "url": url},
         #     {"$set": {"url": url, "tags": [], "timestamp": datetime.utcnow()}},
@@ -90,7 +90,7 @@ def add_tag():
         if result.modified_count > 0:
             return jsonify({"success": True})
         else:
-            return jsonify({"success": False, "message": "URL not found or tags not added"}), 400
+            return jsonify({"success": False, "msg": "URL not found or tags not added"}), 400
     else:
         return jsonify({"success": False, "msg": "Not logged in."})
 
@@ -110,7 +110,7 @@ def remove_tag():
         if result.modified_count > 0:
             return jsonify({"success": True})
         else:
-            return jsonify({"success": False, "message": "Tags not present"}), 400
+            return jsonify({"success": False, "msg": "Tags not present"}), 400
     else:
         return jsonify({"success": False, "msg": "Not logged in."})
 

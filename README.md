@@ -38,6 +38,8 @@ Developed using:
 - [SingleFile](https://github.com/gildas-lormeau/SingleFile)
 The backend will host the app's APIs and main functionalities, such as crawling websites, archiving and retrieving snapshots.
 
+---
+
 ## Developers manual
 ### Basic operations
 - Start all services:  `docker compose up -d`
@@ -46,10 +48,74 @@ The backend will host the app's APIs and main functionalities, such as crawling 
 - Rebuild "main-api" service after making changes:  `docker compose up -d --build main-api`
 - Stop all services:  `docker compose down`
 
-### API flow
+---
+### API flow: REGISTER
+**1. Register form page**
+- Username (verify continously with API `/api/register/check`)
+- Email (optional)
+- Password
+- Re-type password (verify with client-side JS)
+
+```
+POST /api/register/check
+
+{"username": "alice"}
+```
+```
+{"success":true, "msg":"Username is avalable."}
+---
+{"success":false, "msg":"Username is not avalable."}
+```
+
+**2. Register new user**
+```
+POST /api/register/do_register
+
+{
+  "email": "alice@wonderland.org",
+  "username": "alice",
+  "password": "p@ssw0rd"
+}
+```
+```
+{"success":true, "msg":"Signup Successful!"}
+---
+{"success":false, "msg":"Password is less than 8 chacracter!"}
+```
+
+
+### API flow: AUTH
+**1. Login**
+```
+POST /api/auth/login
+
+{"username": "alice", "password": "p@ssw0rd"}
+```
+```
+{"success":true, "msg":"Login successful."}
+---
+{"success":false, "msg":"Wrong username or password."}
+```
+
+**2. Logout**
+```
+POST /api/auth/logout
+
+{}
+```
+```
+{"success":true, "msg":"Logout successful."}
+---
+{"success":false, "msg":"Not logged in."}
+```
+
+
+### API flow: ARCHIVE
 **1. Check if URL is already archived**
 ```
-GET /api/archive/is_archived?url=https://www.github.com
+POST /api/archive/is_archived
+
+{"url": "https://www.github.com"}
 ```
 ```
 {"status":"not_archived","success":true}

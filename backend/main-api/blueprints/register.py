@@ -19,12 +19,12 @@ def check():
 	if (User().is_available(username)):
 		return jsonify({
 			"success": True,
-			"message": "Username is avalable."
+			"msg": "Username is avalable."
 		}), 200
 	else:
 		return jsonify({
 			"success": False,
-			"message": "Username is not available."
+			"msg": "Username is not available."
 		}), 200
 
 # route do register
@@ -34,7 +34,7 @@ def do_register():
 
 class User:
 	def is_available(self, username):
-		entry = db.user.find_one({"username": username})
+		entry = db.users.find_one({"username": username})
 		return not entry
 
 	def do_register(self):
@@ -49,27 +49,27 @@ class User:
 		if not self.is_available(user["username"]):
 			return jsonify({
 				"success": False,
-				"message": "Username is not available."
+				"msg": "Username is not available."
 			}), 200
 
 		# check if password is more than = 8 character
 		if len(user['password']) < 8:
 			return jsonify({
 				"success": False,
-				"message": "Password is less than 8 chacracter!"
+				"msg": "Password is less than 8 chacracter!"
 			}), 200
 		
 		# Encrypt the password
 		user['password'] = pbkdf2_sha256.encrypt(user['password'])
 
 		# Insert user to mongodb
-		if db.user.insert_one(user):
+		if db.users.insert_one(user):
 			return jsonify({
 				"success": True,
-				"message": "Signup Successful!"
+				"msg": "Signup Successful!"
 			}), 200
 		
 		return jsonify({
 			"success": False,
-			"message": "Signup failed!"
+			"msg": "Signup failed!"
 		}), 200

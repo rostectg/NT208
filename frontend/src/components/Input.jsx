@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Snapshot from './Snapshot';
 import { Modal, Spin, message, notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListSnapshots, checkArchive, doArchive } from '../redux/action';
+import { getListSnapshots, checkArchive, doArchive } from '../redux/action/snapshot-action';
 
 
 function Input() {

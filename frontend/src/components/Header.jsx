@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-Header.propTypes = {
 
-};
-
-function Header(props) {
+function Header() {
   //Handle current time
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
 

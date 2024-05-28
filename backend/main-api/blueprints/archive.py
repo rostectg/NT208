@@ -61,6 +61,7 @@ def do_archive_thread(url):
 			"file_path": filepath
 		}
 		snapshot_list.insert_one(data)
+	return raw_html
 
 
 
@@ -94,9 +95,27 @@ def is_archived():
 	return jsonify(RESPONSE)
 
 
+# @archive.route('/do_archive', methods=['GET', 'POST'])
+# def do_archive():
+# 	RESPONSE = {}
+# 	url = request.args.get("url")
+# 	if (not url):
+# 		url = request.json["url"]
+# 	if (url == None):
+# 		RESPONSE["success"] = False
+# 		RESPONSE["msg"] = "URL is empty"
+# 	elif (not validators.url(url)):
+# 		RESPONSE["success"] = False
+# 		RESPONSE["msg"] = "URL is malformed"
+# 	else:
+# 		RESPONSE["success"] = True
+# 		RESPONSE["msg"] = "Archiving target site, please wait."
+# 		Thread(target = do_archive_thread, args = (url,)).start()
+# 	return jsonify(RESPONSE)
+
+# WITHOUT THREADING
 @archive.route('/do_archive', methods=['GET', 'POST'])
 def do_archive():
-	RESPONSE = {}
 	url = request.args.get("url")
 	if (not url):
 		url = request.json["url"]
@@ -107,9 +126,7 @@ def do_archive():
 		RESPONSE["success"] = False
 		RESPONSE["msg"] = "URL is malformed"
 	else:
-		RESPONSE["success"] = True
-		RESPONSE["msg"] = "Archiving target site, please wait."
-		Thread(target = do_archive_thread, args = (url,)).start()
+		return do_archive_thread(url)
 	return jsonify(RESPONSE)
 
 @archive.route('/list', methods=['GET', 'POST'])

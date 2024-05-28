@@ -3,3 +3,4 @@ pymongo
 requests
 validators
 passlib
+Flask-Authlib-Client

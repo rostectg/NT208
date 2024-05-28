@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { checkArchive, doArchive, getListSnapshots} from './action'
+import { checkArchive, doArchive, getListSnapshots } from '../action/snapshot-action'
 
 const initialState = {
   isArchived: false,

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { listSnapshotVersionsApi } from "../apis/listSnapshotVersionsApi";
-import { doArchiveApi } from "../apis/doArchive";
-import { isArchivedApi } from "../apis/isArchivedApi";
+import { listSnapshotVersionsApi } from "../../apis/listSnapshotVersionsApi";
+import { doArchiveApi } from "../../apis/doArchive";
+import { isArchivedApi } from "../../apis/isArchivedApi";
 
 export const getListSnapshots = createAsyncThunk("snapshot/getlist",
   async (url, { isRejectedWithValue }) => {

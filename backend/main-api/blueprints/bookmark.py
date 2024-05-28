@@ -74,7 +74,7 @@ def remove_bookmark():
     else:
         return jsonify({"success": False, "msg": "Not logged in."})
 
-@bookmark_bp.route('/add_tag', methods=['POST'])
+@bookmark_bp.route('/add_tags', methods=['POST'])
 def add_tag():
     if is_logged_in():
         data = request.get_json()
@@ -94,7 +94,7 @@ def add_tag():
     else:
         return jsonify({"success": False, "msg": "Not logged in."})
 
-@bookmark_bp.route('/remove_tag', methods=['POST'])
+@bookmark_bp.route('/remove_tags', methods=['POST'])
 def remove_tag():
     if is_logged_in():
         data = request.get_json()
@@ -117,7 +117,6 @@ def remove_tag():
 @bookmark_bp.route('/list', methods=['POST'])
 def list_bookmarks():
     if is_logged_in():
-        data = request.get_json()
         uid = session["user_id"]
         
         user_bookmarks = bookmarks_collection.find({"user_id": uid})

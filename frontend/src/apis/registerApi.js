@@ -1,8 +1,8 @@
 import { axiosInstance } from "./api-config";
 
-export const loginApi = {
+export const registerApi = {
   post(data) {
-    const url = '/api/auth/login';
+    const url = `/api/register/do_register`;
     return axiosInstance.post(url, data);
   }
 }

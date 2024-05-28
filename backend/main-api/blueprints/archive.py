@@ -61,7 +61,8 @@ def do_archive_thread(url):
 			"file_path": filepath
 		}
 		snapshot_list.insert_one(data)
-	return raw_html
+
+	return (str(timestamp), date_str)
 
 
 
@@ -126,7 +127,12 @@ def do_archive():
 		RESPONSE["success"] = False
 		RESPONSE["msg"] = "URL is malformed"
 	else:
-		return do_archive_thread(url)
+		sid,timestamp = do_archive_thread(url)
+		return jsonify({
+			"success": True,
+			"snapshot_id": sid,
+			"created_time": timestamp,
+		})
 	return jsonify(RESPONSE)
 
 @archive.route('/list', methods=['GET', 'POST'])

@@ -7,22 +7,26 @@ import PrivateRoute from './components/PrivateRoute';
 import HeaderAfterLogIn from './components/HeaderAfterLogIn';
 import Input from './components/Input';
 import SnapshotEntity from './components/SnapshotEntity';
+import { useState } from 'react';
+import RecentViewed from './components/RecentViewed';
+import { useSelector } from 'react-redux';
 
 function App() {
-
-
+  const [userName, setUserName] = useState("")
+  const auth = useSelector((state) => state.user.auth)
   return (
-    <div className=''>
+    <div>
       <Routes>
         <Route element={<Header />}>
-          <Route path='login' element={<LoginPage />} />
-          <Route path='register' element={<Register />} />
+          <Route path='login' element={<LoginPage setUserName={setUserName} />} />
+          <Route path='register' element={<Register setUserName={setUserName} />} />
         </Route>
-        <Route element={<PrivateRoute>
-          <HeaderAfterLogIn />
+        <Route element={<PrivateRoute auth={auth}>
+          <HeaderAfterLogIn userName={userName} />
         </PrivateRoute>}>
           <Route path='/' element={<Input />} />
-          <Route path='/:id' element={<SnapshotEntity />} />
+          <Route path=':id' element={<SnapshotEntity />} />
+          <Route path='recent' element={<RecentViewed />} />
         </Route>
       </Routes>
     </div>

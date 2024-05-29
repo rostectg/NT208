@@ -1,9 +1,42 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, notification } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router';
+import { NavLink } from 'react-router-dom';
+import { logOut } from '../redux/action/user-action';
 
-
-function HeaderAfterLogIn({ children }) {
+function HeaderAfterLogIn({ userName }) {
+  const dispatch = useDispatch()
+  const handleLogOut = async () => {
+    dispatch(logOut())
+    notification.success({ message: "Log out successfully", duration: 3 })
+  }
+  const items = [
+    {
+      key: 1,
+      label: (
+        <NavLink to="recent">
+          Recent Viewed
+        </NavLink>
+      )
+    },
+    {
+      key: 2,
+      label: "Bookmarks"
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 3,
+      label: (
+        <NavLink onClick={handleLogOut}>
+          Log out
+        </NavLink>
+      )
+    }
+  ]
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
 
   useEffect(() => {
@@ -30,17 +63,17 @@ function HeaderAfterLogIn({ children }) {
 
         <div className='col-span-7 md:col-span-8 lg:col-span-9'></div>
 
-
         <div className='col-span-2 mt-2 flex 
       md:col-span-1 
       lg:col-span-2 lg:ml-16
       '>
-          <div className='mr-3 leading-9'>Võ Thị Hưởng</div>
-          <img
-            className='h-11 w-11 rounded-full'
-            src='user-logo.jpg'
-            alt=''
-          />
+          <Dropdown placement='bottomRight' menu={{ items }} arrow>
+            <div className='cursor-pointer flex'>
+              <div className='mt-5'>{userName}</div>
+              <Avatar size={64} icon={<UserOutlined />} />
+            </div>
+          </Dropdown>
+
         </div>
       </div>
       <Outlet />

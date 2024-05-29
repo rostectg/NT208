@@ -5,12 +5,12 @@ from blueprints.archive import archive
 from blueprints.bookmark import bookmark_bp
 from blueprints.register import register
 from blueprints.auth import auth
-from blueprints.oauth import oauth
+from blueprints.oauth import oauth_gg
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = secrets.token_hex()
 
-app.register_blueprint(oauth, url_prefix="/auth")
+app.register_blueprint(oauth_gg, url_prefix="/oauth")
 app.register_blueprint(archive, url_prefix="/archive")
 app.register_blueprint(bookmark_bp, url_prefix="/bookmark")
 app.register_blueprint(register, url_prefix="/register")

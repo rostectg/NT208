@@ -1,23 +1,27 @@
 from flask import jsonify, redirect, url_for, session, Blueprint
 from authlib.integrations.flask_client import OAuth
 import pymongo
-from .auth import is_logged_in
-import uuid
-
 #from datetime import timedelta
-MONGO_CONNECTION_STRING = "mongodb://root:Passw0rd321@mongo:27017/"
+
+MONGO_CONNECTION_STRING = "mongodb://localhost:27017"
 DB_NAME = "archiver_database"
 client = pymongo.MongoClient(MONGO_CONNECTION_STRING)
 db = client[DB_NAME]
 # App config
 oauth_gg = Blueprint('oauth', __name__)
+oauth_gg.config = {}
+@oauth_gg.record
+def record_params(setup_state):
+	app = setup_state.app
+	oauth_gg.config = dict([(key,value) for (key,value) in app.config.items()])
+
+oauth = OAuth(oauth_gg)
 # Session config
 oauth_gg.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 #oauth_gg.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
 oauth_gg.config["GOOGLE_CLIENT_ID"] = "373240734174-h2flbojop81jumt5mrqpt4hvehifup9n.apps.googleusercontent.com"
 oauth_gg.config["GOOGLE_CLIENT_SECRET"] = "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"
 # oAuth Setup
-oauth = OAuth(oauth_gg)
 google = oauth.register(
     name='google',
     client_id = oauth_gg.config["GOOGLE_CLIENT_ID"],
@@ -31,19 +35,19 @@ google = oauth.register(
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration'
 )
 
-class User_gg:
-	def is_available(self, userid):
-		entry = db.users_gg.find_one({"user_id":userid})
-		return not entry
+# class User_gg:
+# 	def is_available(self, userid):
+# 		entry = db.users_gg.find_one({"user_id":userid})
+# 		return not entry
 	
-	def do_register(self):
-		user_gg = {
-            "user_id": str(uuid.uuid4())
-        }	
-		db.users_gg.insert_one(user_gg)
-		google = oauth.create_client('google')  # create the google oauth client
-		redirect_uri = url_for('authorize', _external=True)
-		return google.authorize_redirect(redirect_uri)
+# 	def do_register(self):
+# 		user_gg = {
+#             "user_id": str(uuid.uuid4())
+#         }	
+# 		db.users_gg.insert_one(user_gg)
+# 		google = oauth.create_client('google')  # create the google oauth client
+# 		redirect_uri = url_for('authorize', _external=True)
+# 		return google.authorize_redirect(redirect_uri)
         
 @oauth_gg.route('/')
 def default():
@@ -51,12 +55,12 @@ def default():
 
 @oauth_gg.route('/login')
 def login():
-	if User_gg().is_available():
-		return User_gg().do_register()
-	else:
-		google = oauth.create_client('google')  # create the google oauth client
-		redirect_uri = url_for('authorize', _external=True)
-		return google.authorize_redirect(redirect_uri)
+	# if User_gg().is_available():
+	# 	return User_gg().do_register()
+	# else:
+	google = oauth.create_client('google')  # create the google oauth client
+	redirect_uri = url_for('oauth.authorize', _external=True)
+	return google.authorize_redirect(redirect_uri)
 
 @oauth_gg.route('/authorize')
 def authorize():
@@ -73,11 +77,6 @@ def authorize():
 
 @oauth_gg.route('/logout', methods=['GET','POST'])
 def logout():
-	if is_logged_in():
-		session.clear()
-		return jsonify({
-			"success": True,
-			"msg": "Logout successful."
-		})
-	else:
-		return jsonify({"success": False, "msg": "Not logged in."})
+    for key in list(session.keys()):
+        session.pop(key)
+    return redirect('/')

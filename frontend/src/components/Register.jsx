@@ -1,18 +1,14 @@
-import { Button, Form, Input, message, notification } from 'antd';
+import { Button, Form, Input, notification } from 'antd';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router';
 import { register } from '../redux/action/user-action';
 
-Register.propTypes = {
 
-};
-
-function Register() {
+function Register({ setUserName, setAuth }) {
   const [form] = Form.useForm();
   const auth = useSelector((state) => state.user.auth)
-  const error = useSelector((state) => state.user.error)
-  const statusProgress = useSelector((state) => state.user.status)
+  const userName = Form.useWatch('username', form);
   const dispatch = useDispatch();
 
   const layout = {
@@ -21,14 +17,15 @@ function Register() {
   }
 
   if (auth) {
-    notification.error({ message: "Register successfully", duration: 3 })
+    setAuth(true)
+    userName && setUserName(userName)
+    notification.success({ message: "Register successfully", duration: 3 })
     return <Navigate to="/" replace />;
   }
 
 
   const handleRegister = (values) => {
     dispatch(register(values))
-
     if (!auth) notification.error({ message: "Register failed", duration: 3 })
   }
 

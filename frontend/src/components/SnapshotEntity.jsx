@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { getSnapshotApi } from '../apis/getSnapshotApi';
+import { getSnapshotApi } from '../apis/snapshot/getSnapshotApi';
 
 function SnapshotEntity(props) {
   const location = useLocation();
@@ -12,7 +12,7 @@ function SnapshotEntity(props) {
     getResult.then((res) => {
       setHtml(res.data)
     })
-  }, [])
+  }, [snapshotId])
   return (
     <div dangerouslySetInnerHTML={{ __html: html }} />
   );

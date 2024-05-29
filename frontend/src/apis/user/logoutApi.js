@@ -1,4 +1,4 @@
-import { axiosInstance } from "./api-config";
+import { axiosInstance } from "../api-config";
 
 export const logoutApi = {
   post() {

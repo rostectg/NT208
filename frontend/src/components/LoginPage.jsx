@@ -3,12 +3,12 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router';
 import { logIn } from '../redux/action/user-action';
+import { axiosInstance } from './../apis/api-config';
 
-function LoginPage() {
+function LoginPage({ setUserName }) {
   const [form] = Form.useForm();
   const auth = useSelector((state) => state.user.auth)
-  const error = useSelector((state) => state.user.error)
-  const statusProgress = useSelector((state) => state.user.status)
+  const userName = Form.useWatch('username', form);
   const dispatch = useDispatch();
 
   const layout = {
@@ -17,12 +17,18 @@ function LoginPage() {
   }
 
   if (auth) {
+    userName && setUserName(userName)
     notification.success({ message: "Log in successfully", duration: 3 })
     return <Navigate to="/" replace />;
   }
 
   const handleLogIn = async (values) => {
-    dispatch(logIn(values))
+    // dispatch(logIn(values))
+    const res = await axiosInstance.post('/api/auth/login', values)
+      .then((response) => {
+
+        console.log(response.headers.toJSON);
+      })
   }
 
   const handleLogInFailed = () => {

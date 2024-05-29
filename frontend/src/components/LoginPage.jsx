@@ -2,14 +2,13 @@ import { Button, Form, Input, notification } from 'antd';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router';
-import { logIn } from '../redux/action/user-action';
-import { axiosInstance } from './../apis/api-config';
+import { logIn } from './../redux/action/user-action';
 
 function LoginPage({ setUserName }) {
   const [form] = Form.useForm();
   const auth = useSelector((state) => state.user.auth)
   const userName = Form.useWatch('username', form);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const layout = {
     labelCol: { span: 5 },
@@ -22,13 +21,8 @@ function LoginPage({ setUserName }) {
     return <Navigate to="/" replace />;
   }
 
-  const handleLogIn = async (values) => {
-    // dispatch(logIn(values))
-    const res = await axiosInstance.post('/api/auth/login', values)
-      .then((response) => {
-
-        console.log(response.headers.toJSON);
-      })
+  const handleLogIn = (values) => {
+    dispatch(logIn(values))
   }
 
   const handleLogInFailed = () => {

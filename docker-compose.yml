@@ -34,6 +34,10 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
 
+  frontend:
+    build: ./frontend
+    stop_signal: SIGINT
+
   nginx:
     build: ./backend/nginx
     ports:

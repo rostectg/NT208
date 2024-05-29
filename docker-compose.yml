@@ -36,7 +36,6 @@ services:
 
   frontend:
     build: ./frontend
-    stop_signal: SIGINT
 
   nginx:
     build: ./backend/nginx

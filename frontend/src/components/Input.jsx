@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Snapshot from './Snapshot';
 import { Modal, Spin, message, notification } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getListSnapshots, checkArchive, doArchive } from '../redux/action/snapshot-action';
+import { snapshotAction } from '../redux/action';
+import Snapshot from './Snapshot';
 
 
 function Input() {
@@ -17,10 +17,10 @@ function Input() {
   const statusProgress = useSelector((state) => state.snapshot.status)
 
   const checkIfArchived = async () => {
-    dispatch(checkArchive(inputValue))
+    dispatch(snapshotAction.checkArchive(inputValue))
     if (archived === true) {
       clearInterval(intervalId)
-      dispatch(getListSnapshots(inputValue))
+      dispatch(snapshotAction.getListSnapshots(inputValue))
     }
   };
 
@@ -30,9 +30,9 @@ function Input() {
     if (inputValue === "") {
       notification.error({ message: "Please input URL", duration: 3 })
     } else {
-      dispatch(checkArchive(inputValue))
+      dispatch(snapshotAction.checkArchive(inputValue))
       if (archived === true) {
-        dispatch(getListSnapshots(inputValue))
+        dispatch(snapshotAction.getListSnapshots(inputValue))
       } else {
         notification.info({ message: "This url is not archived", duration: 3 })
         setOpenModal(true)
@@ -60,7 +60,7 @@ function Input() {
   }
 
   const handleArchive = async () => {
-    dispatch(doArchive(inputValue))
+    dispatch(snapshotAction.doArchive(inputValue))
     setOpenModal(false)
     message.loading("Archiving snapshot or your URL...")
     const id = setInterval(checkIfArchived, 1000)

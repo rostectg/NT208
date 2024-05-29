@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { logIn, logOut, register } from "../action/user-action"
+import { userAction } from "../action"
 
 const initialState = {
   auth: false,
@@ -14,50 +14,51 @@ export const userSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(logIn.pending, (state) => {
+    builder.addCase(userAction.logIn.pending, (state) => {
       state.auth = false;
       state.error = {};
       state.status = "PENDING"
     })
-    builder.addCase(logIn.fulfilled, (state, action) => {
-      state.error = action.payload ? {} : { message: action.payload.msg };
+    builder.addCase(userAction.logIn.fulfilled, (state, action) => {
+      state.error = action.payload ? {} : { message: "Log in failed" };
       state.status = action.payload ? "SUCCESS" : "ERROR";
       state.auth = action.payload;
     })
-    builder.addCase(logIn.rejected, (state) => {
+    builder.addCase(userAction.logIn.rejected, (state) => {
       state.error.message = "Something went wrong";
       state.status = "ERROR"
     })
 
 
-    builder.addCase(register.pending, (state) => {
+    builder.addCase(userAction.register.pending, (state) => {
       state.auth = false;
       state.error = {};
       state.status = "PENDING"
     })
-    builder.addCase(register.fulfilled, (state, action) => {
-      state.error = action.payload.success === "true" ? {} : { message: action.payload.msg };
-      state.status = action.payload.success === "true" ? "SUCCESS" : "ERROR";
-      state.auth = action.payload.success === "true" ? true : false;
+    builder.addCase(userAction.register.fulfilled, (state, action) => {
+      state.error = action.payload ? {} : { message: action.payload.msg };
+      state.status = action.payload ? "SUCCESS" : "ERROR";
+      state.auth = action.payload ? true : false;
     })
-    builder.addCase(register.rejected, (state) => {
+    builder.addCase(userAction.register.rejected, (state) => {
       state.error.message = "Something went wrong";
       state.status = "ERROR"
     })
 
-    builder.addCase(logOut.pending, (state) => {
-      state.auth = false;
+    builder.addCase(userAction.logOut.pending, (state) => {
+      state.auth = true;
       state.error = {};
       state.status = "PENDING"
     })
-    builder.addCase(logOut.fulfilled, (state, action) => {
-      state.error = action.payload.success === true ? {} : { message: action.payload.msg };
-      state.status = action.payload.success === true ? "SUCCESS" : "ERROR";
-      state.auth = action.payload.success === true ? true : false;
+    builder.addCase(userAction.logOut.fulfilled, (state, action) => {
+      state.error = action.payload ? {} : { message: action.payload.msg };
+      state.status = action.payload ? "SUCCESS" : "ERROR";
+      state.auth = action.payload ? false : true;
     })
-    builder.addCase(logOut.rejected, (state) => {
+    builder.addCase(userAction.logOut.rejected, (state) => {
       state.error.message = "Something went wrong";
       state.status = "ERROR"
+      state.auth = true;
     })
 
   }

@@ -17,7 +17,6 @@ function Register({ setUserName, setAuth }) {
   }
 
   if (auth) {
-    setAuth(true)
     userName && setUserName(userName)
     notification.success({ message: "Register successfully", duration: 3 })
     return <Navigate to="/" replace />;
@@ -26,7 +25,6 @@ function Register({ setUserName, setAuth }) {
 
   const handleRegister = (values) => {
     dispatch(register(values))
-    if (!auth) notification.error({ message: "Register failed", duration: 3 })
   }
 
   const handleRegisterFailed = () => {

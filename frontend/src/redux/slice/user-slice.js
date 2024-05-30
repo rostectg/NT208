@@ -36,9 +36,9 @@ export const userSlice = createSlice({
       state.status = "PENDING"
     })
     builder.addCase(userAction.register.fulfilled, (state, action) => {
-      state.error = action.payload ? {} : { message: action.payload.msg };
+      state.error = action.payload ? {} : { message: "Register failed" };
       state.status = action.payload ? "SUCCESS" : "ERROR";
-      state.auth = action.payload ? true : false;
+      state.auth = action.payload;
     })
     builder.addCase(userAction.register.rejected, (state) => {
       state.error.message = "Something went wrong";

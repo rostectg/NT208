@@ -34,6 +34,9 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
 
+  frontend:
+    build: ./frontend
+
   nginx:
     build: ./backend/nginx
     ports:

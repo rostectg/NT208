@@ -15,10 +15,8 @@ function UrlItem({ data }) {
 
   return (
     <div className='md:w-5/6 lg:w-5/6 mx-auto my-2 h-20 bg-slate-300 text-black cursor-pointer px-3'>
-      <div>
-        <h2 className='font-bold'>{data.url}</h2>
-        <p className='font-thin italic text-sm'>Viewed at: {formattedVietnamTime}</p>
-      </div>
+      <h2 className='font-bold'>{data.url}</h2>
+      <p className='font-thin italic text-sm'>Viewed at: {formattedVietnamTime}</p>
     </div>
   );
 }

@@ -8,12 +8,20 @@ import { isArchivedApi } from './../apis/snapshot/isArchivedApi';
 
 function RecentViewed() {
   const [inputValue, setInputValue] = useState("");
-  const [intervalId, setIntervalId] = useState(null);
   const [openModal, setOpenModal] = useState(false)
 
   const dispatch = useDispatch()
-  // const listRecentViewed = useSelector((state) => state.bookmark.recentViewedURLs)
   const statusProgress = useSelector((state) => state.snapshot.status)
+  const listRecentViewed = []
+
+  useEffect(() => {
+    async function getListRecent() {
+      const response = await recentViewedApi.post()
+      console.log(response);
+      listRecentViewed.push(response.data.recent_urls)
+    }
+    getListRecent()
+  }, [])
 
   const handleButton = async () => {
     if (inputValue === "") {
@@ -28,11 +36,6 @@ function RecentViewed() {
       }
     }
   }
-
-  useEffect(() => {
-    return () => clearInterval(intervalId);
-  }, [intervalId]);
-
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -80,6 +83,7 @@ function RecentViewed() {
       <h4 className='text-center my-5 text-lg'>Recent Viewed Snapshots</h4>
 
       <div className='output w-5/6 mx-auto'>
+        {listRecentViewed.length > 0 && listRecentViewed.map((item, index) => (<UrlItem data={item} />))}
       </div>
 
       <Modal title="Confirm" open={openModal} onOk={handleArchive} onCancel={handleCancel}>

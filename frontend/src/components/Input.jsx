@@ -8,7 +8,6 @@ import { isArchivedApi } from '../apis/snapshot';
 
 function Input() {
   const [inputValue, setInputValue] = useState("");
-  const [intervalId, setIntervalId] = useState(null);
   const [openModal, setOpenModal] = useState(false)
 
 
@@ -32,12 +31,6 @@ function Input() {
     }
   }
 
-  useEffect(() => {
-    return () => clearInterval(intervalId);
-  }, [intervalId]);
-
-
-  //retain
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };

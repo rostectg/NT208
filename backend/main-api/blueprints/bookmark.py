@@ -17,6 +17,7 @@ recents_collection = db['recents']
 
 def add_recent(url):
     if is_logged_in():
+        uid = session['user_id']
         exist = recents_collection.find_one({"user_id": uid, "url": url})
         if (not exist):
             uid = session["user_id"]

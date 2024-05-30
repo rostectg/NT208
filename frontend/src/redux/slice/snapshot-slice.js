@@ -36,10 +36,11 @@ export const archivedSlice = createSlice({
       state.isArchived = false
       state.status = "PENDING"
     })
-    builder.addCase(snapshotAction.doArchive.fulfilled, (state) => {
+    builder.addCase(snapshotAction.doArchive.fulfilled, (state, action) => {
       state.error = {}
       state.status = "SUCCESS"
-      state.isArchived = false
+      state.isArchived = true
+      state.listSnapshot.push(action.payload)
     })
     builder.addCase(snapshotAction.doArchive.rejected, (state, action) => {
       state.error.message = action.payload

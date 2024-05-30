@@ -14,8 +14,8 @@ export const getListSnapshots = createAsyncThunk("snapshot/getlist",
 export const doArchive = createAsyncThunk("snapshot/archiving",
   async (url, { isRejectedWithValue }) => {
     try {
-      await snapshotApi.doArchiveApi.get(url)
-      return "ARCHIVING"
+      const response = await snapshotApi.doArchiveApi.get(url)
+      return response.data
     } catch (error) {
       return isRejectedWithValue(error.message)
     }
@@ -25,7 +25,7 @@ export const checkArchive = createAsyncThunk("snapshot/isArchived",
   async (url, { isRejectedWithValue }) => {
     try {
       const archived = await snapshotApi.isArchivedApi.get(url)
-      return archived.data.status === "archived"
+      return archived.data.status === "archived" ? true : false
     } catch (error) {
       return isRejectedWithValue(error.message)
     }

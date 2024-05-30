@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { snapshotAction } from '../redux/action';
 import Snapshot from './Snapshot';
+import { isArchivedApi } from '../apis/snapshot';
 
 
 function Input() {
@@ -12,26 +13,17 @@ function Input() {
 
 
   const dispatch = useDispatch()
-  const archived = useSelector((state) => state.snapshot.isArchived)
   const listSnapshots = useSelector((state) => state.snapshot.listSnapshot)
   const statusProgress = useSelector((state) => state.snapshot.status)
 
-  const checkIfArchived = async () => {
-    dispatch(snapshotAction.checkArchive(inputValue))
-    if (archived === true) {
-      clearInterval(intervalId)
-      dispatch(snapshotAction.getListSnapshots(inputValue))
-    }
-  };
-
   //click button arrow
-  const handleButton = () => {
+  const handleButton = async () => {
     // check archive or not
     if (inputValue === "") {
       notification.error({ message: "Please input URL", duration: 3 })
     } else {
-      dispatch(snapshotAction.checkArchive(inputValue))
-      if (archived === true) {
+      const response = await isArchivedApi.get(inputValue)
+      if (response.data.status === "archived") {
         dispatch(snapshotAction.getListSnapshots(inputValue))
       } else {
         notification.info({ message: "This url is not archived", duration: 3 })
@@ -63,8 +55,6 @@ function Input() {
     dispatch(snapshotAction.doArchive(inputValue))
     setOpenModal(false)
     message.loading("Archiving snapshot or your URL...")
-    const id = setInterval(checkIfArchived, 1000)
-    setIntervalId(id)
   }
 
   return (

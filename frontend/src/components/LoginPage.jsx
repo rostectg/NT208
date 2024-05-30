@@ -17,7 +17,6 @@ function LoginPage({ setUserName }) {
 
   if (auth) {
     userName && setUserName(userName)
-    notification.success({ message: "Log in successfully", duration: 3 })
     return <Navigate to="/" replace />;
   }
 

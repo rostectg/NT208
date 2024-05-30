@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { getSnapshotApi } from '../apis/snapshot/getSnapshotApi';
 
-function SnapshotEntity(props) {
+function SnapshotEntity() {
   const location = useLocation();
   const pathName = location.pathname;
   const snapshotId = pathName.slice(1);

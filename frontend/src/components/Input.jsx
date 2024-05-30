@@ -1,15 +1,15 @@
-import { Modal, Spin, message, notification } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Modal, message, notification } from 'antd';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { isArchivedApi } from '../apis/snapshot';
 import { snapshotAction } from '../redux/action';
 import Snapshot from './Snapshot';
-import { isArchivedApi } from '../apis/snapshot';
+import { LoadingOutlined } from '@ant-design/icons'
 
 
 function Input() {
   const [inputValue, setInputValue] = useState("");
   const [openModal, setOpenModal] = useState(false)
-
 
   const dispatch = useDispatch()
   const listSnapshots = useSelector((state) => state.snapshot.listSnapshot)
@@ -69,7 +69,7 @@ function Input() {
           value={inputValue}
         />
 
-        {statusProgress === "PENDING" ? <Spin /> :
+        {statusProgress === "PENDING" ? <LoadingOutlined /> :
           (<i className="!text-black fa-solid fa-arrow-right ml-3 cursor-pointer lg:p-2 lg:ml-1"
             onClick={handleButton}
           ></i>)}

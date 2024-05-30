@@ -7,6 +7,8 @@ import { NavLink } from 'react-router-dom';
 import { logOut } from '../redux/action/user-action';
 
 function HeaderAfterLogIn({ userName }) {
+  notification.success({ message: `Welcome ${userName}`, duration: 3 })
+
   const dispatch = useDispatch()
   const handleLogOut = async () => {
     dispatch(logOut())
@@ -50,7 +52,7 @@ function HeaderAfterLogIn({ userName }) {
     darkMode ? document.body.classList.add('dark') : document.body.classList.remove('dark');
   })
   return (
-    <div className='w-screen h-screen'>
+    <div className='w-screen'>
       <div className='header fixed top-2 left-0 right-0 h-12 md:h-16 grid grid-cols-12'>
         <div className='header__logo col-span-3 lg:col-span-1'>
           <img

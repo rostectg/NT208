@@ -18,7 +18,6 @@ function Register({ setUserName, setAuth }) {
 
   if (auth) {
     userName && setUserName(userName)
-    notification.success({ message: "Register successfully", duration: 3 })
     return <Navigate to="/" replace />;
   }
 

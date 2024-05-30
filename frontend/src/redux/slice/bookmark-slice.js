@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import { bookmarkAction } from "../action"
 
 const initialState = {
-  recentViewedURLs: [],
+  recents: [],
   listBookmarks: [],
   status: 'INIT',
   error: {
@@ -22,7 +22,7 @@ export const bookmarkSlice = createSlice({
     builder.addCase(bookmarkAction.recentViewed.fulfilled, (state, action) => {
       state.error = action.payload.msg ? {} : { message: action.payload.msg };
       state.status = action.payload.success ? "SUCCESS" : "ERROR";
-      state.recentViewedURLs = action.payload.recent_urls
+      state.recents.push(action.payload.recent_urls)
     })
     builder.addCase(bookmarkAction.recentViewed.rejected, (state) => {
       state.error.message = "Something went wrong";

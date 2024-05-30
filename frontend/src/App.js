@@ -1,15 +1,15 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
 import Header from './components/Header';
-import Register from './components/Register';
-import PrivateRoute from './components/PrivateRoute';
 import HeaderAfterLogIn from './components/HeaderAfterLogIn';
 import Input from './components/Input';
-import SnapshotEntity from './components/SnapshotEntity';
-import { useState } from 'react';
+import LoginPage from './components/LoginPage';
+import PrivateRoute from './components/PrivateRoute';
 import RecentViewed from './components/RecentViewed';
-import { useSelector } from 'react-redux';
+import Register from './components/Register';
+import SnapshotEntity from './components/SnapshotEntity';
 
 function App() {
   const [userName, setUserName] = useState("")

@@ -1,18 +1,22 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Outlet } from 'react-router';
+import { Navigate, Outlet, useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import { logOut } from '../redux/action/user-action';
+import { useDispatch, useSelector } from 'react-redux';
+import { userAction } from '../redux/action';
 
 function HeaderAfterLogIn({ userName }) {
-  notification.success({ message: `Welcome ${userName}`, duration: 3 })
-
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const auth = useSelector((state) => state.user.auth)
+
   const handleLogOut = async () => {
-    dispatch(logOut())
-    notification.success({ message: "Log out successfully", duration: 3 })
+    dispatch(userAction.logOut())
+    if (!auth) {
+      notification.success({ message: 'Log out successfully', duration: 3 });
+      navigate('/login', { replace: true });
+    }
   }
   const items = [
     {
@@ -33,9 +37,9 @@ function HeaderAfterLogIn({ userName }) {
     {
       key: 3,
       label: (
-        <NavLink onClick={handleLogOut}>
+        <a href='/login'>
           Log out
-        </NavLink>
+        </a>
       )
     }
   ]

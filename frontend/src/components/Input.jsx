@@ -1,5 +1,5 @@
 import { Modal, message, notification } from 'antd';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { isArchivedApi } from '../apis/snapshot';
 import { snapshotAction } from '../redux/action';
@@ -8,6 +8,8 @@ import { LoadingOutlined } from '@ant-design/icons'
 
 
 function Input() {
+  const inputUrl = useRef()
+
   const [inputValue, setInputValue] = useState("");
   const [openModal, setOpenModal] = useState(false)
 
@@ -50,6 +52,11 @@ function Input() {
     message.loading("Archiving snapshot or your URL...")
   }
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    handleButton();
+  };
+
   return (
     <div>
       <h2 className='text-center text-2xl font-medium mt-20 mb-8
@@ -59,14 +66,18 @@ function Input() {
       >
         World Web
       </h2>
-      <form className='rounded-full h-11 w-5/6 md:w-4/6 mx-auto py-2 border-slate-200 border-2 bg-white lg:h-16 lg:w-2/5 lg:py-4'>
+      <form
+        onSubmit={handleSubmit}
+        className='rounded-full h-11 w-5/6 md:w-4/6 mx-auto py-2 border-slate-200 border-2 bg-white lg:h-16 lg:w-2/5 lg:py-4'>
         <i className="!text-black fa-solid fa-xmark p-1 ml-3 mr-2 cursor-pointer lg:p-2 lg:mx-3"
           onClick={handleClearInput}></i>
         <input
+          ref={inputUrl}
           className='input !text-black w-3/4 focus:outline-none md:w-5/6 lg:w-5/6'
           placeholder='https://www.example.com'
           onChange={handleInputChange}
           value={inputValue}
+          onKeyDown={(e) => e.key === "Enter" && handleButton}
         />
 
         {statusProgress === "PENDING" ? <LoadingOutlined /> :

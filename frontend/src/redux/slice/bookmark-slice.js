@@ -20,9 +20,9 @@ export const bookmarkSlice = createSlice({
       state.status = "PENDING"
     })
     builder.addCase(bookmarkAction.recentViewed.fulfilled, (state, action) => {
-      state.error = action.payload.msg ? {} : { message: action.payload.msg };
-      state.status = action.payload.success ? "SUCCESS" : "ERROR";
-      state.recents.push(action.payload.recent_urls)
+      state.error = action.payload ? {} : { message: action.payload.msg };
+      state.status = action.payload ? "SUCCESS" : "ERROR";
+      state.recents.push(...action.payload)
     })
     builder.addCase(bookmarkAction.recentViewed.rejected, (state) => {
       state.error.message = "Something went wrong";

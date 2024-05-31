@@ -14,9 +14,12 @@ function UrlItem({ data }) {
   const formattedVietnamTime = vietnamTime.toISOString().slice(0, 19).replace('T', ' ');
 
   return (
-    <div className='md:w-5/6 lg:w-5/6 mx-auto my-2 h-20 bg-slate-300 text-black cursor-pointer px-3'>
-      <h2 className='font-bold'>{data.url}</h2>
-      <p className='font-thin italic text-sm'>Viewed at: {formattedVietnamTime}</p>
+    <div className='flex justify-between md:w-5/6 lg:w-5/6 mx-auto my-2 h-20 bg-slate-300 text-black cursor-pointer px-3'>
+      <div>
+        <h2 className='font-bold'>{data.url}</h2>
+        <p className='font-thin italic text-sm'>Saved at: {formattedVietnamTime}</p>
+      </div>
+      <img className='h-6 mt-3 mr-3' src='not-bookmark.png' alt='' />
     </div>
   );
 }

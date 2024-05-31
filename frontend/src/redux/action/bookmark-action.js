@@ -23,13 +23,9 @@ export const newBookmark = createAsyncThunk("bookmark/newbookmark",
 )
 
 export const recentViewed = createAsyncThunk("bookmark/recentViewed",
-  async ({ isRejectedWithValue }) => {
-    try {
-      const response = await bookmarkApi.recentViewedApi.post()
-      return response.data
-    } catch (error) {
-      return isRejectedWithValue(error.message)
-    }
+  async () => {
+    const response = await bookmarkApi.recentViewedApi.post()
+    return response.data.recent_urls
   }
 )
 

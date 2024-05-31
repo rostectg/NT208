@@ -1,23 +1,23 @@
 import { Modal, Spin, message, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { bookmarkAction, snapshotAction } from '../redux/action';
+import { recentViewedApi } from '../apis/bookmark';
+import { snapshotAction } from '../redux/action';
 import { isArchivedApi } from './../apis/snapshot/isArchivedApi';
 import UrlItem from './UrlItem';
-import { recentViewedApi } from '../apis/bookmark';
 
 function RecentViewed() {
   const [inputValue, setInputValue] = useState("");
   const [openModal, setOpenModal] = useState(false)
+  const [recents, setRecents] = useState([])
 
   const dispatch = useDispatch()
   const statusProgress = useSelector((state) => state.snapshot.status)
-  const listRecentViewed = []
 
   useEffect(() => {
     async function getRecentUrls() {
       const response = await recentViewedApi.post()
-      listRecentViewed.push(response.data.recent_urls)
+      setRecents(response.data.recent_urls)
     }
     getRecentUrls()
   }, [])
@@ -68,7 +68,8 @@ function RecentViewed() {
       >
         World Web
       </h2>
-      <form onSubmit={handleSubmit} className='rounded-full h-11 w-5/6 md:w-4/6 mx-auto py-2 border-slate-200 border-2 bg-white lg:h-16 lg:w-2/5 lg:py-4'>
+      <form onSubmit={handleSubmit}
+        className='rounded-full h-11 w-5/6 md:w-4/6 mx-auto py-2 border-slate-200 border-2 bg-white lg:h-16 lg:w-2/5 lg:py-4'>
         <i className="!text-black fa-solid fa-xmark p-1 ml-3 mr-2 cursor-pointer lg:p-2 lg:mx-3"
           onClick={handleClearInput}></i>
         <input
@@ -84,10 +85,13 @@ function RecentViewed() {
           ></i>)}
       </form>
 
-      <h4 className='text-center my-5 text-lg'>Recent Viewed Snapshots</h4>
+      {recents.length > 0 ? (<h4 className='text-center my-5 text-lg'>Recent Viewed Snapshots</h4>)
+        : (<h4 className='text-center my-5 text-lg'>There are no recent viewed urls</h4>)}
 
       <div className='output w-5/6 mx-auto'>
-        {listRecentViewed.map((item, index) => <UrlItem key={index} data={item} />)}
+        {recents.map((item, index) => {
+          return (<UrlItem data={item} key={index} />)
+        })}
       </div>
 
       <Modal title="Confirm" open={openModal} onOk={handleArchive} onCancel={handleCancel}>

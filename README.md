@@ -1,15 +1,14 @@
-# Archiver - NT208 project
+![image](https://github.com/rostectg/NT208/assets/26693829/110bb548-ff2b-4a21-8256-057f802deb77)# Archiver - NT208 project
 
 Web archiving is the process of collecting portions of the World Wide Web to ensure the information is preserved in an archive for future researchers, historians, and the public.
 
 **Archiver** is a simple project that let users archive a website, and view previously taken web snapshots.
 
 ## Key features
-- Dead simple. Just paste your URL and let it handle the rest.
-- Optionally crawl and archive the whole website.
-- Snapshots are saved as ISO standard WARC format.
-- ...?
-
+- Simple to use. Just paste your URL and let it handle the rest.
+- Easy to deploy. Up and running with a single command.
+- Recents, Bookmarks & more
+  
 ## Usage
 ### Guest users
 Just simply paste your URL and press "Go".
@@ -21,6 +20,13 @@ Guest users are allowed to make 3 archiving requests a day, and view 10 web snap
 Registered users enjoys the same functionality as guest users, plus:
 - Unlimited archiving requests and snapshot view times.
 - Bookmark your favorite snapshots.
+
+## Deploying
+```
+git clone https://github.com/rostectg/NT208
+cd NT208
+docker compose up -d
+```
 
 ## Project structure
 This project contains 2 main components: `Frontend` and `Backend`.

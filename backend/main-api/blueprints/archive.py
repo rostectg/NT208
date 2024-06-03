@@ -117,6 +117,7 @@ def is_archived():
 # WITHOUT THREADING
 @archive.route('/do_archive', methods=['GET', 'POST'])
 def do_archive():
+	RESPONSE = {}
 	url = request.args.get("url")
 	if (not url):
 		url = request.json["url"]

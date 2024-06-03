@@ -19,7 +19,6 @@ function UrlItem({ data }) {
         <h2 className='font-bold'>{data.url}</h2>
         <p className='font-thin italic text-sm'>Saved at: {formattedVietnamTime}</p>
       </div>
-      <img className='h-6 mt-3 mr-3' src='not-bookmark.png' alt='' />
     </div>
   );
 }

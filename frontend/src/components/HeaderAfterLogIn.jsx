@@ -1,16 +1,15 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, notification } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router';
-import { NavLink } from 'react-router-dom';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Outlet, useNavigate } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { userAction } from '../redux/action';
 
-function HeaderAfterLogIn({ userName }) {
+function HeaderAfterLogIn({ userName, darkMode, setDarkMode }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const auth = useSelector((state) => state.user.auth)
-
   const handleLogOut = async () => {
     dispatch(userAction.logOut())
     if (!auth) {
@@ -37,24 +36,13 @@ function HeaderAfterLogIn({ userName }) {
     {
       key: 3,
       label: (
-        <a href='/login'>
+        <a onClick={handleLogOut} href='/login'>
           Log out
         </a>
       )
     }
   ]
-  const [currentHour, setCurrentHour] = useState(new Date().getHours());
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentHour(new Date().getHours());
-    }, 3600000);
-    return () => clearInterval(intervalId);
-  }, []);
-  const [darkMode, setDarkMode] = useState(currentHour >= 17 || currentHour <= 5);
-  useEffect(() => {
-    darkMode ? document.body.classList.add('dark') : document.body.classList.remove('dark');
-  })
+  
   return (
     <div className='w-screen'>
       <div className='header fixed top-2 left-0 right-0 h-12 md:h-16 grid grid-cols-12'>

@@ -1,22 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
 
-function Header() {
-  //Handle current time
-  const [currentHour, setCurrentHour] = useState(new Date().getHours());
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentHour(new Date().getHours());
-    }, 3600000);
-    return () => clearInterval(intervalId);
-  }, []);
-  const [darkMode, setDarkMode] = useState(currentHour >= 17 || currentHour <= 5);
-  useEffect(() => {
-    darkMode ? document.body.classList.add('dark') : document.body.classList.remove('dark');
-  })
-
+function Header({darkMode, setDarkMode}) {
+  
   return (
     <div>
       <div className='header fixed top-2 left-0 right-0 h-12 md:h-16 grid grid-cols-12'>

@@ -1,4 +1,4 @@
-![image](https://github.com/rostectg/NT208/assets/26693829/110bb548-ff2b-4a21-8256-057f802deb77)# Archiver - NT208 project
+# Archiver - NT208 project
 
 Web archiving is the process of collecting portions of the World Wide Web to ensure the information is preserved in an archive for future researchers, historians, and the public.
 

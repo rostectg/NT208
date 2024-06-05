@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function UrlItem({ data }) {
+  const [bookmarked, setBookmarked] = useState(false)
   const utcDate = new Date(data.timestamp);
 
   function convertToTimeZone(date, offset) {
@@ -19,6 +20,10 @@ function UrlItem({ data }) {
         <h2 className='font-bold'>{data.url}</h2>
         <p className='font-thin italic text-sm'>Saved at: {formattedVietnamTime}</p>
       </div>
+
+      {bookmarked ?
+        <img onClick={() => setBookmarked(false)} src='bookmarked.png' alt='' />
+        : <img onClick={() => setBookmarked(true)} src='not-bookmark.png' alt='' />}
     </div>
   );
 }

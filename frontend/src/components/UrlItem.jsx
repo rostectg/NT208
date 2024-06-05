@@ -22,8 +22,8 @@ function UrlItem({ data }) {
       </div>
 
       {bookmarked ?
-        <img onClick={() => setBookmarked(false)} src='bookmarked.png' alt='' />
-        : <img onClick={() => setBookmarked(true)} src='not-bookmark.png' alt='' />}
+        <img className='h-6 mt-3 mr-3' onClick={() => setBookmarked(false)} src='bookmarked.png' alt='' />
+        : <img className='h-6 mt-3 mr-3' onClick={() => setBookmarked(true)} src='not-bookmark.png' alt='' />}
     </div>
   );
 }
